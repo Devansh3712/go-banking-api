@@ -13,8 +13,6 @@ import (
 )
 
 // Authorize user credentials and return a JWT.
-// TODO:
-// Implement storing bearer token in form of cookies.
 func AuthHandler(c *gin.Context) {
 	var user models.UserAuth
 	err := c.ShouldBind(&user)
@@ -34,6 +32,7 @@ func AuthHandler(c *gin.Context) {
 		return
 	}
 	tokenString, _ := auth.GenerateToken(user.Email)
+	c.SetCookie("JWT", tokenString, 3600, "/", "localhost", true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User authorized.",
 		"token":   tokenString,
