@@ -6,6 +6,7 @@ import (
 
 	"github.com/Devansh3712/go-banking-api/config"
 	"github.com/Devansh3712/go-banking-api/models"
+	"github.com/Devansh3712/go-banking-api/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -35,10 +36,11 @@ func CreateUser(user *models.User) error {
 	if err != nil {
 		return err
 	}
-	err = user.Hash()
+	passwordHash, err := utils.Hash(user.Password)
 	if err != nil {
 		return err
 	}
+	user.Password = *passwordHash
 	account := &models.Account{
 		Email:  user.Email,
 		User:   user,
@@ -59,7 +61,7 @@ func AuthUser(user *models.UserAuth) error {
 	if query := db.Where("email = ?", user.Email).First(&result); query.Error != nil {
 		return query.Error
 	}
-	data, err := user.Hash()
+	data, err := utils.Hash(user.Password)
 	if err != nil {
 		return err
 	}
@@ -69,8 +71,21 @@ func AuthUser(user *models.UserAuth) error {
 	return nil
 }
 
-// Return user and account data.
-func GetUserData(email string) (*models.Account, error) {
+// Return user data.
+func GetUserData(email string) (*models.User, error) {
+	db, err := gorm.Open(postgres.Open(databaseURI), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	result := models.User{}
+	if query := db.Where("email = ?", email).First(&result); query.Error != nil {
+		return nil, query.Error
+	}
+	return &result, nil
+}
+
+// Return user's account data.
+func GetUserAccountData(email string) (*models.Account, error) {
 	db, err := gorm.Open(postgres.Open(databaseURI), &gorm.Config{})
 	if err != nil {
 		return nil, err

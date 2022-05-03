@@ -29,9 +29,10 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/api", root)
+	router.GET("/api/login", routes.AuthHandler)
 	router.POST("/api/users", routes.CreateUser)
 	router.GET("/api/users", middleware.JWTAuthMiddleware(), routes.GetUserData)
-	router.GET("/api/users/login", routes.AuthHandler)
+	router.GET("/api/accounts", middleware.JWTAuthMiddleware(), routes.GetUserAccountData)
 
 	fmt.Println("API running on http://localhost:8080")
 	router.Run("localhost:8080")
