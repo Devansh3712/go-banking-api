@@ -1,6 +1,7 @@
 package database
 
 import (
+	"crypto/rand"
 	"errors"
 	"fmt"
 
@@ -41,12 +42,16 @@ func CreateUser(user *models.User) error {
 		return err
 	}
 	user.Password = *passwordHash
+	accNumber, _ := rand.Prime(rand.Reader, 32)
 	account := &models.Account{
 		Email:  user.Email,
 		User:   user,
 		Amount: 0,
+		Number: accNumber.String(),
 	}
-	db.Create(account)
+	if query := db.Create(account); query.Error != nil {
+		return query.Error
+	}
 	return nil
 }
 

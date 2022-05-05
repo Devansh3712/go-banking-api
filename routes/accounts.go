@@ -12,7 +12,7 @@ func GetUserAccountData(c *gin.Context) {
 	result, err := database.GetUserAccountData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err,
 		})
 		return
 	}

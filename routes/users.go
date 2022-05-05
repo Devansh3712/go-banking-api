@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/mail"
 	"time"
 
 	"github.com/Devansh3712/go-banking-api/database"
@@ -16,7 +17,7 @@ func CreateUser(c *gin.Context) {
 	data, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": fmt.Sprintf("Invalid parameter: %s", err),
+			"message": err,
 		})
 		return
 	}
@@ -24,13 +25,19 @@ func CreateUser(c *gin.Context) {
 	err = json.Unmarshal(data, &user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err,
+		})
+		return
+	}
+	if _, err = mail.ParseAddress(user.Email); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
 		})
 		return
 	}
 	if err := database.CreateUser(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err,
 		})
 		return
 	}
@@ -44,7 +51,7 @@ func GetUserData(c *gin.Context) {
 	result, err := database.GetUserData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"message": err,
 		})
 		return
 	}

@@ -3,16 +3,18 @@ package models
 import "encoding/json"
 
 type Account struct {
-	Email  string  `json:"email" gorm:"primaryKey"`
-	User   *User   `json:"user" gorm:"foreignKey:Email"`
-	Amount float32 `json:"amount" gorm:"default:0"`
+	Email  string  `gorm:"primaryKey"`
+	User   *User   `gorm:"foreignKey:Email"`
+	Amount float32 `gorm:"default:0"`
+	Number string
 }
 
 // Remove email field from Account struct output.
 func (account *Account) MarshalJSON() ([]byte, error) {
 	data := map[string]any{
-		"user":   account.User,
-		"amount": account.Amount,
+		"user":           account.User,
+		"amount":         account.Amount,
+		"account_number": account.Number,
 	}
 	return json.Marshal(data)
 }
