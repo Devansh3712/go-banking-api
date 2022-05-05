@@ -22,7 +22,7 @@ func GenerateToken(email string) (string, error) {
 	claims := JWTClaims{
 		email,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
 			Issuer:    issuer,
 			IssuedAt:  time.Now().Unix(),
 		},

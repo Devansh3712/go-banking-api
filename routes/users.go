@@ -31,7 +31,7 @@ func CreateUser(c *gin.Context) {
 	}
 	if _, err = mail.ParseAddress(user.Email); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
+			"message": "Invalid email address.",
 		})
 		return
 	}

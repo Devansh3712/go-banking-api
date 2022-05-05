@@ -37,7 +37,7 @@ func AuthHandler(c *gin.Context) {
 	cookie := http.Cookie{
 		Name:    "JWT",
 		Value:   tokenString,
-		Expires: time.Now().Add(time.Hour),
+		Expires: time.Now().Add(time.Minute * 30),
 	}
 	http.SetCookie(c.Writer, &cookie)
 	c.JSON(http.StatusOK, gin.H{
