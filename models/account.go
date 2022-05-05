@@ -3,8 +3,8 @@ package models
 import "encoding/json"
 
 type Account struct {
-	Email  string  `gorm:"primaryKey"`
-	User   *User   `gorm:"foreignKey:Email"`
+	Email  string  `gorm:"PRIMARY_KEY"`
+	User   *User   `gorm:"FOREIGNKEY:Email"`
 	Amount float32 `gorm:"default:0"`
 	Number string
 }

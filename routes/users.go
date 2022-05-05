@@ -22,8 +22,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 	user := models.User{Timestamp: time.Now()}
-	err = json.Unmarshal(data, &user)
-	if err != nil {
+	if err = json.Unmarshal(data, &user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
@@ -35,14 +34,16 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	if err := database.CreateUser(&user); err != nil {
+	accNumber, err := database.CreateUser(&user)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{
-		"message": fmt.Sprintf("%s user created.", user.Email),
+		"message":        fmt.Sprintf("User '%s' created.", user.Email),
+		"account_number": accNumber,
 	})
 }
 

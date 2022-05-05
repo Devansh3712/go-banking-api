@@ -6,9 +6,9 @@ import (
 )
 
 type User struct {
-	Email     string    `json:"email" gorm:"primaryKey"`
-	Password  string    `json:"password"`
-	Phone     string    `json:"phone"`
+	Email     string    `json:"email" gorm:"PRIMARY_KEY"`
+	Password  string    `json:"password" gorm:"NOT_NULL"`
+	Phone     string    `json:"phone" gorm:"NOT_NULL"`
 	Timestamp time.Time `json:"created_at"`
 }
 

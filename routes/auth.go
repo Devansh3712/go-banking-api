@@ -26,8 +26,7 @@ func AuthHandler(c *gin.Context) {
 	}
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &user)
-	err = database.AuthUser(&user)
-	if err != nil {
+	if err = database.AuthUser(&user); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{
 			"message": fmt.Sprintf("Authentication failed: %s", err),
 		})

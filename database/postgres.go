@@ -32,14 +32,14 @@ func Migrate() error {
 
 // Add a new user to the database. The user password is hashed
 // using SHA256.
-func CreateUser(user *models.User) error {
+func CreateUser(user *models.User) (*string, error) {
 	db, err := gorm.Open(postgres.Open(databaseURI), &gorm.Config{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	passwordHash, err := utils.Hash(user.Password)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	user.Password = *passwordHash
 	accNumber, _ := rand.Prime(rand.Reader, 32)
@@ -50,9 +50,9 @@ func CreateUser(user *models.User) error {
 		Number: accNumber.String(),
 	}
 	if query := db.Create(account); query.Error != nil {
-		return query.Error
+		return nil, query.Error
 	}
-	return nil
+	return &account.Number, nil
 }
 
 // Validate user password. The hash of password is compared
