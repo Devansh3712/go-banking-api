@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Authenticate JWT token for accessing endpoints.
 func JWTAuthMiddleware() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var (

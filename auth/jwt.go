@@ -14,16 +14,15 @@ type JWTClaims struct {
 }
 
 var (
-	tokenExpireDuration = time.Hour
-	issuer              = config.EnvValue("ISSUER")
-	secretKey           = []byte(config.EnvValue("SECRET_KEY"))
+	issuer    = config.EnvValue("ISSUER")
+	secretKey = []byte(config.EnvValue("SECRET_KEY"))
 )
 
 func GenerateToken(email string) (string, error) {
 	claims := JWTClaims{
 		email,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(tokenExpireDuration).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour).Unix(),
 			Issuer:    issuer,
 			IssuedAt:  time.Now().Unix(),
 		},
