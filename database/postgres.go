@@ -16,8 +16,10 @@ import (
 // PostgreSQL URI of the database used by the API.
 var databaseURI string = fmt.Sprintf(
 	"host=%s user=%s password=%s dbname=%s",
-	config.EnvValue("HOST"), config.EnvValue("USER"),
-	config.EnvValue("PASSWORD"), config.EnvValue("DBNAME"),
+	config.EnvValue("POSTGRES_HOSTNAME"),
+	config.EnvValue("POSTGERS_USERNAME"),
+	config.EnvValue("POSTGRES_PASSWORD"),
+	config.EnvValue("POSTGRES_DATABASE"),
 )
 
 // Create tables using structs.

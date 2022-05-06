@@ -24,7 +24,7 @@ func CreateUser(c *gin.Context) {
 	user := models.User{Timestamp: time.Now()}
 	if err = json.Unmarshal(data, &user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
+			"message": "Incomplete or invalid fields, check the request body.",
 		})
 		return
 	}
