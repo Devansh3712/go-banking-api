@@ -8,7 +8,7 @@ import (
 type Account struct {
 	Email   string  `gorm:"PRIMARY_KEY"`
 	User    *User   `gorm:"FOREIGNKEY:Email"`
-	Balance float32 `gorm:"default:100"`
+	Balance float32 `gorm:"default:0"`
 	Number  string
 }
 

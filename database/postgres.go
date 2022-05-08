@@ -48,7 +48,7 @@ func CreateUser(user *models.User) (*string, error) {
 	account := &models.Account{
 		Email:   user.Email,
 		User:    user,
-		Balance: 100,
+		Balance: 0,
 		Number:  accNumber.String(),
 	}
 	if query := db.Create(account); query.Error != nil {
@@ -104,6 +104,7 @@ func GetAccountData(email string) (*models.Account, error) {
 	return &result, nil
 }
 
+// Update the balance of a user's account.
 func UpdateAccountBalance(email string, balance float32) error {
 	db, err := gorm.Open(postgres.Open(databaseURI), &gorm.Config{})
 	if err != nil {

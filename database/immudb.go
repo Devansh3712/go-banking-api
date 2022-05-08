@@ -86,7 +86,7 @@ func CreateTransaction(_type string, amount string, accNumber string) (*string, 
 	return txnID, nil
 }
 
-func GetTransactions(accNumber string, limit int) ([]models.Transaction, error) {
+func GetTransactions(accNumber string, limit int) (*[]models.Transaction, error) {
 	connection, err := client.NewImmuClient(client.DefaultOptions())
 	if err != nil {
 		return nil, err
@@ -118,9 +118,9 @@ func GetTransactions(accNumber string, limit int) ([]models.Transaction, error) 
 			Type:      row.Values[1].GetS(),
 			Amount:    row.Values[2].GetS(),
 			Number:    row.Values[3].GetS(),
-			Timestamp: time.UnixMicro(1652024616468933),
+			Timestamp: time.UnixMicro(row.Values[4].GetTs()),
 		}
 		transactions = append(transactions, txn)
 	}
-	return transactions, nil
+	return &transactions, nil
 }
