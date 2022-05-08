@@ -46,10 +46,10 @@ func CreateUser(user *models.User) (*string, error) {
 	user.Password = *passwordHash
 	accNumber, _ := rand.Prime(rand.Reader, 32)
 	account := &models.Account{
-		Email:  user.Email,
-		User:   user,
-		Amount: 0,
-		Number: accNumber.String(),
+		Email:   user.Email,
+		User:    user,
+		Balance: 100,
+		Number:  accNumber.String(),
 	}
 	if query := db.Create(account); query.Error != nil {
 		return nil, query.Error
@@ -102,4 +102,15 @@ func GetUserAccountData(email string) (*models.Account, error) {
 		return nil, query.Error
 	}
 	return &result, nil
+}
+
+func UpdateAccountBalance(email string, balance float32) error {
+	db, err := gorm.Open(postgres.Open(databaseURI), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+	if query := db.Model(&models.Account{}).Where("email = ?", email).Update("balance", balance); query.Error != nil {
+		return query.Error
+	}
+	return nil
 }

@@ -28,14 +28,15 @@ func main() {
 	fmt.Println("Migrations successfull.")
 
 	gin.SetMode(gin.ReleaseMode)
-	router := gin.Default()
+	app := gin.Default()
 
-	router.GET("/api", root)
-	router.GET("/api/login", routes.AuthHandler)
-	router.POST("/api/users", routes.CreateUser)
-	router.GET("/api/users", middleware.JWTAuthMiddleware(), routes.GetUserData)
-	router.GET("/api/accounts", middleware.JWTAuthMiddleware(), routes.GetUserAccountData)
+	app.GET("/api", root)
+	app.GET("/api/login", routes.AuthHandler)
+	app.POST("/api/user", routes.CreateUser)
+	app.GET("/api/user", middleware.JWTAuthMiddleware(), routes.GetUserData)
+	app.GET("/api/account", middleware.JWTAuthMiddleware(), routes.GetUserAccountData)
+	app.GET("/api/account/withdraw", middleware.JWTAuthMiddleware(), routes.Withdraw)
 
 	fmt.Println("API running on http://localhost:8000")
-	router.Run("localhost:8000")
+	app.Run("localhost:8000")
 }
