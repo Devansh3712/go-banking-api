@@ -8,14 +8,14 @@ import (
 type Account struct {
 	Email   string  `gorm:"PRIMARY_KEY"`
 	User    *User   `gorm:"FOREIGNKEY:Email"`
-	Balance float32 `gorm:"default:0"`
+	Balance float64 `gorm:"default:0"`
 	Number  string
 }
 
 type Transaction struct {
 	TxnID     string
 	Type      string
-	Amount    string
+	Amount    float64
 	Number    string
 	Timestamp time.Time
 }

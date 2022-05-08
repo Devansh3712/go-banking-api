@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/Devansh3712/go-banking-api/config"
@@ -113,10 +114,11 @@ func GetTransactions(accNumber string, limit int) (*[]models.Transaction, error)
 	}
 	var transactions []models.Transaction
 	for _, row := range result.Rows {
+		amountFloat, _ := strconv.ParseFloat(row.Values[2].GetS(), 64)
 		txn := models.Transaction{
 			TxnID:     row.Values[0].GetS(),
 			Type:      row.Values[1].GetS(),
-			Amount:    row.Values[2].GetS(),
+			Amount:    amountFloat,
 			Number:    row.Values[3].GetS(),
 			Timestamp: time.UnixMicro(row.Values[4].GetTs()),
 		}

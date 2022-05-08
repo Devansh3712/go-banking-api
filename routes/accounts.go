@@ -56,7 +56,7 @@ func Deposit(c *gin.Context) {
 		})
 		return
 	}
-	if err = database.UpdateAccountBalance(email, result.Balance+float32(amountFloat)); err != nil {
+	if err = database.UpdateAccountBalance(email, result.Balance+amountFloat); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
@@ -71,7 +71,7 @@ func Deposit(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message":          fmt.Sprintf("Amount %s deposited to account %s.", amount, result.Number),
-		"available_amount": result.Balance + float32(amountFloat),
+		"available_amount": result.Balance + amountFloat,
 		"txn_id":           *txnID,
 		"timestamp":        time.Now(),
 	})
@@ -100,14 +100,14 @@ func Withdraw(c *gin.Context) {
 		})
 		return
 	}
-	if result.Balance < float32(amountFloat) {
+	if result.Balance < amountFloat {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message":          "Withdrawal amount more than account balance.",
 			"available_amount": result.Balance,
 		})
 		return
 	}
-	if err = database.UpdateAccountBalance(email, result.Balance-float32(amountFloat)); err != nil {
+	if err = database.UpdateAccountBalance(email, result.Balance-amountFloat); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
@@ -122,7 +122,7 @@ func Withdraw(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message":          fmt.Sprintf("Amount %s withdrawed from account %s.", amount, result.Number),
-		"available_amount": result.Balance - float32(amountFloat),
+		"available_amount": result.Balance - amountFloat,
 		"txn_id":           *txnID,
 		"timestamp":        time.Now(),
 	})
