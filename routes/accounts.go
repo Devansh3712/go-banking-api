@@ -12,7 +12,7 @@ import (
 
 func GetUserAccountData(c *gin.Context) {
 	email := c.MustGet("email").(string)
-	result, err := database.GetUserAccountData(email)
+	result, err := database.GetAccountData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
@@ -20,6 +20,50 @@ func GetUserAccountData(c *gin.Context) {
 		return
 	}
 	c.IndentedJSON(http.StatusOK, result)
+}
+
+func Deposit(c *gin.Context) {
+	email := c.MustGet("email").(string)
+	amount, got := c.GetQuery("amount")
+	if !got {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Query parameter amount required.",
+		})
+		return
+	}
+	amountFloat, err := strconv.ParseFloat(amount, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Amount should be a float.",
+		})
+		return
+	}
+	result, err := database.GetAccountData(email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+	if err = database.UpdateAccountBalance(email, result.Balance+float32(amountFloat)); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+	txnID, err := database.CreateTransaction("deposit", amount, result.Number)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"message": "Unable to deposit amount.",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message":          fmt.Sprintf("Amount %s deposited to account %s.", amount, result.Number),
+		"available_amount": result.Balance + float32(amountFloat),
+		"txn_id":           *txnID,
+		"timestamp":        time.Now(),
+	})
 }
 
 func Withdraw(c *gin.Context) {
@@ -38,7 +82,7 @@ func Withdraw(c *gin.Context) {
 		})
 		return
 	}
-	result, err := database.GetUserAccountData(email)
+	result, err := database.GetAccountData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
@@ -52,7 +96,7 @@ func Withdraw(c *gin.Context) {
 		})
 		return
 	}
-	if err = database.UpdateAccountBalance(email, float32(amountFloat)); err != nil {
+	if err = database.UpdateAccountBalance(email, result.Balance-float32(amountFloat)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
@@ -60,8 +104,8 @@ func Withdraw(c *gin.Context) {
 	}
 	txnID, err := database.CreateTransaction("withdraw", amount, result.Number)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
+		c.JSON(http.StatusBadGateway, gin.H{
+			"message": "Unable to withdraw amount.",
 		})
 		return
 	}

@@ -32,9 +32,12 @@ func main() {
 
 	app.GET("/api", root)
 	app.GET("/api/login", routes.AuthHandler)
+
 	app.POST("/api/user", routes.CreateUser)
 	app.GET("/api/user", middleware.JWTAuthMiddleware(), routes.GetUserData)
+
 	app.GET("/api/account", middleware.JWTAuthMiddleware(), routes.GetUserAccountData)
+	app.GET("/api/account/deposit", middleware.JWTAuthMiddleware(), routes.Deposit)
 	app.GET("/api/account/withdraw", middleware.JWTAuthMiddleware(), routes.Withdraw)
 
 	fmt.Println("API running on http://localhost:8000")

@@ -92,7 +92,7 @@ func GetUserData(email string) (*models.User, error) {
 }
 
 // Return user's account data.
-func GetUserAccountData(email string) (*models.Account, error) {
+func GetAccountData(email string) (*models.Account, error) {
 	db, err := gorm.Open(postgres.Open(databaseURI), &gorm.Config{})
 	if err != nil {
 		return nil, err
