@@ -12,14 +12,25 @@ import (
 
 func GetUserAccountData(c *gin.Context) {
 	email := c.MustGet("email").(string)
-	result, err := database.GetAccountData(email)
+	acc, err := database.GetAccountData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, result)
+	txn, err := database.GetTransactions(acc.Number, 10)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+	data := map[string]interface{}{
+		"account":      acc,
+		"transactions": txn,
+	}
+	c.IndentedJSON(http.StatusOK, data)
 }
 
 func Deposit(c *gin.Context) {

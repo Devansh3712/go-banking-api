@@ -2,9 +2,11 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/Devansh3712/go-banking-api/config"
+	"github.com/Devansh3712/go-banking-api/models"
 	"github.com/Devansh3712/go-banking-api/utils"
 	"github.com/codenotary/immudb/pkg/client"
 	"google.golang.org/grpc/metadata"
@@ -82,4 +84,43 @@ func CreateTransaction(_type string, amount string, accNumber string) (*string, 
 		return nil, err
 	}
 	return txnID, nil
+}
+
+func GetTransactions(accNumber string, limit int) ([]models.Transaction, error) {
+	connection, err := client.NewImmuClient(client.DefaultOptions())
+	if err != nil {
+		return nil, err
+	}
+	ctx := context.Background()
+	response, err := connection.Login(
+		ctx,
+		[]byte(config.EnvValue("IMMUDB_USERNAME")),
+		[]byte(config.EnvValue("IMMUDB_PASSWORD")),
+	)
+	if err != nil {
+		return nil, err
+	}
+	md := metadata.Pairs("authorization", response.Token)
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	result, err := connection.SQLQuery(
+		ctx,
+		fmt.Sprintf("SELECT * FROM transactions WHERE account_number = @accNumber LIMIT %d", limit),
+		map[string]interface{}{"accNumber": accNumber},
+		true,
+	)
+	if err != nil {
+		return nil, err
+	}
+	var transactions []models.Transaction
+	for _, row := range result.Rows {
+		txn := models.Transaction{
+			TxnID:     row.Values[0].GetS(),
+			Type:      row.Values[1].GetS(),
+			Amount:    row.Values[2].GetS(),
+			Number:    row.Values[3].GetS(),
+			Timestamp: time.UnixMicro(1652024616468933),
+		}
+		transactions = append(transactions, txn)
+	}
+	return transactions, nil
 }
