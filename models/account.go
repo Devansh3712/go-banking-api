@@ -4,7 +4,7 @@ import "encoding/json"
 
 type Account struct {
 	Email  string  `gorm:"PRIMARY_KEY"`
-	User   *User   `gorm:"FOREIGN_KEY:Email"`
+	User   *User   `gorm:"FOREIGNKEY:Email"`
 	Amount float32 `gorm:"default:0"`
 	Number string
 }

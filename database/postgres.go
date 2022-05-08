@@ -17,13 +17,13 @@ import (
 var databaseURI string = fmt.Sprintf(
 	"host=%s user=%s password=%s dbname=%s",
 	config.EnvValue("POSTGRES_HOSTNAME"),
-	config.EnvValue("POSTGERS_USERNAME"),
+	config.EnvValue("POSTGRES_USERNAME"),
 	config.EnvValue("POSTGRES_PASSWORD"),
 	config.EnvValue("POSTGRES_DATABASE"),
 )
 
 // Create tables using structs.
-func Migrate() error {
+func MigratePostgres() error {
 	db, err := gorm.Open(postgres.Open(databaseURI), &gorm.Config{})
 	if err != nil {
 		return err

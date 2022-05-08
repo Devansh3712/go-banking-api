@@ -19,8 +19,10 @@ func root(c *gin.Context) {
 }
 
 func main() {
-	err := database.Migrate()
-	if err != nil {
+	if err := database.MigratePostgres(); err != nil {
+		panic(err)
+	}
+	if err := database.MigrateImmuDB(); err != nil {
 		panic(err)
 	}
 	fmt.Println("Migrations successfull.")
@@ -34,6 +36,6 @@ func main() {
 	router.GET("/api/users", middleware.JWTAuthMiddleware(), routes.GetUserData)
 	router.GET("/api/accounts", middleware.JWTAuthMiddleware(), routes.GetUserAccountData)
 
-	fmt.Println("API running on http://localhost:8080")
-	router.Run("localhost:8080")
+	fmt.Println("API running on http://localhost:8000")
+	router.Run("localhost:8000")
 }
