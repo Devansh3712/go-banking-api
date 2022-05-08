@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Devansh3712/go-banking-api/config"
+	"github.com/Devansh3712/go-banking-api/utils"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -14,8 +14,8 @@ type JWTClaims struct {
 }
 
 var (
-	issuer    = config.EnvValue("ISSUER")
-	secretKey = []byte(config.EnvValue("SECRET_KEY"))
+	issuer    = utils.GetEnv("ISSUER")
+	secretKey = []byte(utils.GetEnv("SECRET_KEY"))
 )
 
 func GenerateToken(email string) (string, error) {

@@ -30,6 +30,7 @@ func (account *Account) MarshalJSON() ([]byte, error) {
 	return json.Marshal(data)
 }
 
+// Remove account number from Transaction struct output.
 func (transaction *Transaction) MarshalJSON() ([]byte, error) {
 	data := map[string]any{
 		"transaction_id":   transaction.TxnID,

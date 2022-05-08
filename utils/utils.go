@@ -4,6 +4,9 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"fmt"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func Hash(password string) (*string, error) {
@@ -24,4 +27,13 @@ func GenerateTxnID() (*string, error) {
 	}
 	id := fmt.Sprintf("%x", bytes)
 	return &id, nil
+}
+
+// Get environment variable values.
+func GetEnv(key string) string {
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(err)
+	}
+	return os.Getenv(key)
 }

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Devansh3712/go-banking-api/config"
 	"github.com/Devansh3712/go-banking-api/models"
 	"github.com/Devansh3712/go-banking-api/utils"
 	"gorm.io/driver/postgres"
@@ -16,10 +15,10 @@ import (
 // PostgreSQL URI of the database used by the API.
 var databaseURI string = fmt.Sprintf(
 	"host=%s user=%s password=%s dbname=%s",
-	config.EnvValue("POSTGRES_HOSTNAME"),
-	config.EnvValue("POSTGRES_USERNAME"),
-	config.EnvValue("POSTGRES_PASSWORD"),
-	config.EnvValue("POSTGRES_DATABASE"),
+	utils.GetEnv("POSTGRES_HOSTNAME"),
+	utils.GetEnv("POSTGRES_USERNAME"),
+	utils.GetEnv("POSTGRES_PASSWORD"),
+	utils.GetEnv("POSTGRES_DATABASE"),
 )
 
 // Create tables using structs.

@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Devansh3712/go-banking-api/config"
 	"github.com/Devansh3712/go-banking-api/models"
 	"github.com/Devansh3712/go-banking-api/utils"
 	"github.com/codenotary/immudb/pkg/client"
@@ -23,8 +22,8 @@ func MigrateImmuDB() error {
 	ctx := context.Background()
 	response, err := connection.Login(
 		ctx,
-		[]byte(config.EnvValue("IMMUDB_USERNAME")),
-		[]byte(config.EnvValue("IMMUDB_PASSWORD")),
+		[]byte(utils.GetEnv("IMMUDB_USERNAME")),
+		[]byte(utils.GetEnv("IMMUDB_PASSWORD")),
 	)
 	if err != nil {
 		return err
@@ -57,8 +56,8 @@ func CreateTransaction(_type string, amount string, accNumber string) (*string, 
 	ctx := context.Background()
 	response, err := connection.Login(
 		ctx,
-		[]byte(config.EnvValue("IMMUDB_USERNAME")),
-		[]byte(config.EnvValue("IMMUDB_PASSWORD")),
+		[]byte(utils.GetEnv("IMMUDB_USERNAME")),
+		[]byte(utils.GetEnv("IMMUDB_PASSWORD")),
 	)
 	if err != nil {
 		return nil, err
@@ -95,8 +94,8 @@ func GetTransactions(accNumber string, limit int) (*[]models.Transaction, error)
 	ctx := context.Background()
 	response, err := connection.Login(
 		ctx,
-		[]byte(config.EnvValue("IMMUDB_USERNAME")),
-		[]byte(config.EnvValue("IMMUDB_PASSWORD")),
+		[]byte(utils.GetEnv("IMMUDB_USERNAME")),
+		[]byte(utils.GetEnv("IMMUDB_PASSWORD")),
 	)
 	if err != nil {
 		return nil, err
