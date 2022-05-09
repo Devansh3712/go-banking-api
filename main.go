@@ -30,15 +30,22 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
 
-	app.GET("/api", root)
-	app.GET("/api/login", routes.AuthHandler)
-
-	app.POST("/api/user", routes.CreateUser)
-	app.GET("/api/user", middleware.JWTAuthMiddleware(), routes.GetUserData)
-
-	app.GET("/api/account", middleware.JWTAuthMiddleware(), routes.GetUserAccountData)
-	app.GET("/api/account/deposit", middleware.JWTAuthMiddleware(), routes.Deposit)
-	app.GET("/api/account/withdraw", middleware.JWTAuthMiddleware(), routes.Withdraw)
+	v1 := app.Group("/api/v1")
+	{
+		v1.GET("/", root)
+		v1.GET("/login", routes.AuthHandler)
+		user := v1.Group("/user")
+		{
+			user.GET("/", middleware.JWTAuthMiddleware(), routes.GetUserData)
+			user.POST("/", routes.CreateUser)
+		}
+		account := v1.Group("/account")
+		{
+			account.GET("/", middleware.JWTAuthMiddleware(), routes.GetUserAccountData)
+			account.GET("/deposit", middleware.JWTAuthMiddleware(), routes.Deposit)
+			account.GET("/withdraw", middleware.JWTAuthMiddleware(), routes.Withdraw)
+		}
+	}
 
 	fmt.Println("API running on http://localhost:8000")
 	app.Run("localhost:8000")
