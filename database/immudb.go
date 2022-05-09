@@ -2,15 +2,27 @@ package database
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"strconv"
 	"time"
 
+	"github.com/Devansh3712/go-banking-api/config"
 	"github.com/Devansh3712/go-banking-api/models"
-	"github.com/Devansh3712/go-banking-api/utils"
 	"github.com/codenotary/immudb/pkg/client"
 	"google.golang.org/grpc/metadata"
 )
+
+// Create a random transaction ID.
+func generateTxnID() (*string, error) {
+	bytes := make([]byte, 8)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return nil, err
+	}
+	id := fmt.Sprintf("%x", bytes)
+	return &id, nil
+}
 
 // Create transaction table for storing withdrawal
 // and deposits of a user.
@@ -22,8 +34,8 @@ func MigrateImmuDB() error {
 	ctx := context.Background()
 	response, err := connection.Login(
 		ctx,
-		[]byte(utils.GetEnv("IMMUDB_USERNAME")),
-		[]byte(utils.GetEnv("IMMUDB_PASSWORD")),
+		[]byte(config.GetEnv("IMMUDB_USERNAME")),
+		[]byte(config.GetEnv("IMMUDB_PASSWORD")),
 	)
 	if err != nil {
 		return err
@@ -56,15 +68,15 @@ func CreateTransaction(_type models.Txn, amount string, accNumber string) (*stri
 	ctx := context.Background()
 	response, err := connection.Login(
 		ctx,
-		[]byte(utils.GetEnv("IMMUDB_USERNAME")),
-		[]byte(utils.GetEnv("IMMUDB_PASSWORD")),
+		[]byte(config.GetEnv("IMMUDB_USERNAME")),
+		[]byte(config.GetEnv("IMMUDB_PASSWORD")),
 	)
 	if err != nil {
 		return nil, err
 	}
 	md := metadata.Pairs("authorization", response.Token)
 	ctx = metadata.NewOutgoingContext(ctx, md)
-	txnID, err := utils.GenerateTxnID()
+	txnID, err := generateTxnID()
 	if err != nil {
 		return nil, err
 	}
@@ -94,8 +106,8 @@ func GetTransactions(accNumber string, limit int) (*[]models.Transaction, error)
 	ctx := context.Background()
 	response, err := connection.Login(
 		ctx,
-		[]byte(utils.GetEnv("IMMUDB_USERNAME")),
-		[]byte(utils.GetEnv("IMMUDB_PASSWORD")),
+		[]byte(config.GetEnv("IMMUDB_USERNAME")),
+		[]byte(config.GetEnv("IMMUDB_PASSWORD")),
 	)
 	if err != nil {
 		return nil, err
@@ -138,8 +150,8 @@ func GetTransactionsByType(_type models.Txn, accNumber string, limit int) (*[]mo
 	ctx := context.Background()
 	response, err := connection.Login(
 		ctx,
-		[]byte(utils.GetEnv("IMMUDB_USERNAME")),
-		[]byte(utils.GetEnv("IMMUDB_PASSWORD")),
+		[]byte(config.GetEnv("IMMUDB_USERNAME")),
+		[]byte(config.GetEnv("IMMUDB_PASSWORD")),
 	)
 	if err != nil {
 		return nil, err

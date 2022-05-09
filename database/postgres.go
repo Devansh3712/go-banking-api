@@ -2,11 +2,12 @@ package database
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 
+	"github.com/Devansh3712/go-banking-api/config"
 	"github.com/Devansh3712/go-banking-api/models"
-	"github.com/Devansh3712/go-banking-api/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -15,11 +16,22 @@ import (
 // PostgreSQL URI of the database used by the API.
 var databaseURI string = fmt.Sprintf(
 	"host=%s user=%s password=%s dbname=%s",
-	utils.GetEnv("POSTGRES_HOSTNAME"),
-	utils.GetEnv("POSTGRES_USERNAME"),
-	utils.GetEnv("POSTGRES_PASSWORD"),
-	utils.GetEnv("POSTGRES_DATABASE"),
+	config.GetEnv("POSTGRES_HOSTNAME"),
+	config.GetEnv("POSTGRES_USERNAME"),
+	config.GetEnv("POSTGRES_PASSWORD"),
+	config.GetEnv("POSTGRES_DATABASE"),
 )
+
+// Hash passwords using SHA256.
+func hash(password string) (*string, error) {
+	hash := sha256.New()
+	_, err := hash.Write([]byte(password))
+	if err != nil {
+		return nil, err
+	}
+	result := fmt.Sprintf("%x", hash.Sum(nil))
+	return &result, nil
+}
 
 // Create tables using structs.
 func MigratePostgres() error {
@@ -38,7 +50,7 @@ func CreateUser(user *models.User) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	passwordHash, err := utils.Hash(user.Password)
+	passwordHash, err := hash(user.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +79,7 @@ func AuthUser(user *models.UserAuth) error {
 	if query := db.Where("email = ?", user.Email).First(&result); query.Error != nil {
 		return query.Error
 	}
-	data, err := utils.Hash(user.Password)
+	data, err := hash(user.Password)
 	if err != nil {
 		return err
 	}
