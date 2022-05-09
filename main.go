@@ -62,7 +62,7 @@ func main() {
 		{
 			transaction.GET("/", middleware.JWTAuthMiddleware(), routes.GetTransactions)
 			transaction.GET("/deposit", middleware.JWTAuthMiddleware(), routes.GetDeposits)
-			transaction.GET("/withdraw", middleware.JWTAuthMiddleware(), routes.GetWithdawals)
+			transaction.GET("/withdraw", middleware.JWTAuthMiddleware(), routes.GetWithdrawals)
 		}
 	}
 

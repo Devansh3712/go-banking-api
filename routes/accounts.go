@@ -12,7 +12,13 @@ import (
 )
 
 func GetUserAccountData(c *gin.Context) {
-	email := c.MustGet("email").(string)
+	email, ok := c.MustGet("email").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Authorization error.",
+		})
+		return
+	}
 	acc, err := database.GetAccountData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -35,7 +41,13 @@ func GetUserAccountData(c *gin.Context) {
 }
 
 func Deposit(c *gin.Context) {
-	email := c.MustGet("email").(string)
+	email, ok := c.MustGet("email").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Authorization error.",
+		})
+		return
+	}
 	amount, got := c.GetQuery("amount")
 	if !got {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -79,7 +91,13 @@ func Deposit(c *gin.Context) {
 }
 
 func Withdraw(c *gin.Context) {
-	email := c.MustGet("email").(string)
+	email, ok := c.MustGet("email").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Authorization error.",
+		})
+		return
+	}
 	amount, got := c.GetQuery("amount")
 	if !got {
 		c.JSON(http.StatusBadRequest, gin.H{

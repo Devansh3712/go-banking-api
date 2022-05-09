@@ -17,8 +17,7 @@ import (
 // JWT as a cookie.
 func AuthHandler(c *gin.Context) {
 	var user models.UserAuth
-	err := c.ShouldBind(&user)
-	if err != nil {
+	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
 		})
@@ -26,7 +25,7 @@ func AuthHandler(c *gin.Context) {
 	}
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &user)
-	if err = database.AuthUser(&user); err != nil {
+	if err := database.AuthUser(&user); err != nil {
 		c.JSON(http.StatusForbidden, gin.H{
 			"message": fmt.Sprintf("Authentication failed: %s", err),
 		})

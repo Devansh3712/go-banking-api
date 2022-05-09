@@ -48,7 +48,13 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUserData(c *gin.Context) {
-	email := c.MustGet("email").(string)
+	email, ok := c.MustGet("email").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Authorization error.",
+		})
+		return
+	}
 	result, err := database.GetUserData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

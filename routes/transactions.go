@@ -11,7 +11,13 @@ import (
 
 // Get all types of transactions, default limit is 10.
 func GetTransactions(c *gin.Context) {
-	email := c.MustGet("email").(string)
+	email, ok := c.MustGet("email").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Authorization error.",
+		})
+		return
+	}
 	acc, err := database.GetAccountData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -45,8 +51,14 @@ func GetTransactions(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, data)
 }
 
-func GetWithdawals(c *gin.Context) {
-	email := c.MustGet("email").(string)
+func GetWithdrawals(c *gin.Context) {
+	email, ok := c.MustGet("email").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Authorization error.",
+		})
+		return
+	}
 	acc, err := database.GetAccountData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -81,7 +93,13 @@ func GetWithdawals(c *gin.Context) {
 }
 
 func GetDeposits(c *gin.Context) {
-	email := c.MustGet("email").(string)
+	email, ok := c.MustGet("email").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Authorization error.",
+		})
+		return
+	}
 	acc, err := database.GetAccountData(email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
