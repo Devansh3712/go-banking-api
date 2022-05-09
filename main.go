@@ -45,6 +45,12 @@ func main() {
 			account.GET("/deposit", middleware.JWTAuthMiddleware(), routes.Deposit)
 			account.GET("/withdraw", middleware.JWTAuthMiddleware(), routes.Withdraw)
 		}
+		transaction := v1.Group("/transaction")
+		{
+			transaction.GET("/", middleware.JWTAuthMiddleware(), routes.GetTransactions)
+			transaction.GET("/deposit", middleware.JWTAuthMiddleware(), routes.GetDeposits)
+			transaction.GET("/withdraw", middleware.JWTAuthMiddleware(), routes.GetWithdawals)
+		}
 	}
 
 	fmt.Println("API running on http://localhost:8000")

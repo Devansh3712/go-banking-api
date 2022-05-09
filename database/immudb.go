@@ -104,7 +104,54 @@ func GetTransactions(accNumber string, limit int) (*[]models.Transaction, error)
 	ctx = metadata.NewOutgoingContext(ctx, md)
 	result, err := connection.SQLQuery(
 		ctx,
-		fmt.Sprintf("SELECT * FROM transactions WHERE account_number = @accNumber LIMIT %d", limit),
+		fmt.Sprintf(`
+		SELECT * FROM transactions
+		WHERE account_number = @accNumber
+		LIMIT %d`, limit),
+		map[string]interface{}{"accNumber": accNumber},
+		true,
+	)
+	if err != nil {
+		return nil, err
+	}
+	var transactions []models.Transaction
+	for _, row := range result.Rows {
+		amountFloat, _ := strconv.ParseFloat(row.Values[2].GetS(), 64)
+		txn := models.Transaction{
+			TxnID:     row.Values[0].GetS(),
+			Type:      row.Values[1].GetS(),
+			Amount:    amountFloat,
+			Number:    row.Values[3].GetS(),
+			Timestamp: time.UnixMicro(row.Values[4].GetTs()),
+		}
+		transactions = append(transactions, txn)
+	}
+	return &transactions, nil
+}
+
+// Get withdrawals or deposits of a user.
+func GetTransactionsByType(_type models.Txn, accNumber string, limit int) (*[]models.Transaction, error) {
+	connection, err := client.NewImmuClient(client.DefaultOptions())
+	if err != nil {
+		return nil, err
+	}
+	ctx := context.Background()
+	response, err := connection.Login(
+		ctx,
+		[]byte(utils.GetEnv("IMMUDB_USERNAME")),
+		[]byte(utils.GetEnv("IMMUDB_PASSWORD")),
+	)
+	if err != nil {
+		return nil, err
+	}
+	md := metadata.Pairs("authorization", response.Token)
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	result, err := connection.SQLQuery(
+		ctx,
+		fmt.Sprintf(`
+		SELECT * FROM transactions
+		WHERE account_number = @accNumber AND type = %s
+		LIMIT %d`, _type.Value(), limit),
 		map[string]interface{}{"accNumber": accNumber},
 		true,
 	)
