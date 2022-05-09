@@ -150,9 +150,9 @@ func GetTransactionsByType(_type models.Txn, accNumber string, limit int) (*[]mo
 		ctx,
 		fmt.Sprintf(`
 		SELECT * FROM transactions
-		WHERE account_number = @accNumber AND type = %s
-		LIMIT %d`, _type.Value(), limit),
-		map[string]interface{}{"accNumber": accNumber},
+		WHERE account_number = @accNumber AND type = @type
+		LIMIT %d`, limit),
+		map[string]interface{}{"accNumber": accNumber, "type": _type.Value()},
 		true,
 	)
 	if err != nil {

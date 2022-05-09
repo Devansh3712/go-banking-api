@@ -5,3 +5,7 @@ A banking API made with Go, PostgreSQL and ImmuDB, which can:
 - JWT authorization
 
 It is made using `gin` for routing and `gorm` for PostgreSQL management.
+
+### Pre-requisites
+- ImmuDB server
+- PostgreSQL server
