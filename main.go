@@ -29,6 +29,19 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
+	app.RedirectTrailingSlash = true
+	app.HandleMethodNotAllowed = true
+
+	app.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Endpoint not found.",
+		})
+	})
+	app.NoMethod(func(c *gin.Context) {
+		c.JSON(http.StatusForbidden, gin.H{
+			"message": "Method not allowed.",
+		})
+	})
 
 	v1 := app.Group("/api/v1")
 	{
