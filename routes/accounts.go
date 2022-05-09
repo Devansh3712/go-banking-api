@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Devansh3712/go-banking-api/database"
+	"github.com/Devansh3712/go-banking-api/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -62,7 +63,7 @@ func Deposit(c *gin.Context) {
 		})
 		return
 	}
-	txnID, err := database.CreateTransaction("deposit", amount, result.Number)
+	txnID, err := database.CreateTransaction(models.Deposit, amount, result.Number)
 	if err != nil {
 		c.JSON(http.StatusBadGateway, gin.H{
 			"message": "Unable to deposit amount.",
@@ -113,7 +114,7 @@ func Withdraw(c *gin.Context) {
 		})
 		return
 	}
-	txnID, err := database.CreateTransaction("withdraw", amount, result.Number)
+	txnID, err := database.CreateTransaction(models.Withdraw, amount, result.Number)
 	if err != nil {
 		c.JSON(http.StatusBadGateway, gin.H{
 			"message": "Unable to withdraw amount.",

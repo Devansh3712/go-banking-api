@@ -48,7 +48,7 @@ func MigrateImmuDB() error {
 	return nil
 }
 
-func CreateTransaction(_type string, amount string, accNumber string) (*string, error) {
+func CreateTransaction(_type models.Txn, amount string, accNumber string) (*string, error) {
 	connection, err := client.NewImmuClient(client.DefaultOptions())
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func CreateTransaction(_type string, amount string, accNumber string) (*string, 
 		VALUES (@id, @type, @amount, @accNumber, @currTime)`,
 		map[string]interface{}{
 			"id":        *txnID,
-			"type":      _type,
+			"type":      _type.Value(),
 			"amount":    amount,
 			"accNumber": accNumber,
 			"currTime":  time.Now(),

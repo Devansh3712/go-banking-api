@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Hash passwords using SHA256.
 func Hash(password string) (*string, error) {
 	hash := sha256.New()
 	_, err := hash.Write([]byte(password))
@@ -19,6 +20,7 @@ func Hash(password string) (*string, error) {
 	return &result, nil
 }
 
+// Create a random transaction ID.
 func GenerateTxnID() (*string, error) {
 	bytes := make([]byte, 8)
 	_, err := rand.Read(bytes)
