@@ -116,7 +116,7 @@ func GetAccountData(email string) (*models.Account, error) {
 }
 
 // Update the balance of a user's account.
-func UpdateAccountBalance(email string, balance float64) error {
+func UpdateAccountBalance(email string, balance uint64) error {
 	db, err := gorm.Open(postgres.Open(databaseURI), &gorm.Config{})
 	if err != nil {
 		return err

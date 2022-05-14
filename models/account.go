@@ -6,9 +6,9 @@ import (
 )
 
 type Account struct {
-	Email   string  `gorm:"PRIMARY_KEY"`
-	User    *User   `gorm:"FOREIGNKEY:Email"`
-	Balance float64 `gorm:"default:0"`
+	Email   string `gorm:"PRIMARY_KEY"`
+	User    *User  `gorm:"FOREIGNKEY:Email"`
+	Balance uint64 `gorm:"default:0"`
 	Number  string
 }
 
