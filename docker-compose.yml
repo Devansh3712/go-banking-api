@@ -1,0 +1,30 @@
+version: "3.4"
+
+services:
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      - psql
+      - immudb
+
+  psql:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=bankingapi
+    ports:
+      - "5432:5432"
+
+  immudb:
+    image: "codenotary/immudb:latest"
+    environment:
+      - IMMUDB_ADDRESS=0.0.0.0
+      - IMMUDB_AUTH=true
+    ports:
+      - "3322:3322"
