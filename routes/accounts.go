@@ -85,7 +85,7 @@ func Deposit(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message":          fmt.Sprintf("Amount %s deposited to account %s.", amount, result.Number),
-		"available_amount": (result.Balance + amountInt) / 100,
+		"available_amount": float64(result.Balance+amountInt) / 100,
 		"txn_id":           *txnID,
 		"timestamp":        time.Now(),
 	})
@@ -143,7 +143,7 @@ func Withdraw(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message":          fmt.Sprintf("Amount %s withdrawed from account %s.", amount, result.Number),
-		"available_amount": (result.Balance - amountInt) / 100,
+		"available_amount": float64(result.Balance-amountInt) / 100,
 		"txn_id":           *txnID,
 		"timestamp":        time.Now(),
 	})
