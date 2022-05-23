@@ -13,16 +13,12 @@ import (
 func GetTransactions(c *gin.Context) {
 	email, ok := c.MustGet("email").(string)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Authorization error.",
-		})
+		c.JSON(http.StatusBadRequest, models.AuthorizationError)
 		return
 	}
 	acc, err := database.GetAccountData(email)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
-		})
+		c.JSON(http.StatusBadRequest, models.AccountFetchError)
 		return
 	}
 	var TxnLimit int
@@ -48,22 +44,40 @@ func GetTransactions(c *gin.Context) {
 	data := map[string]interface{}{
 		"transactions": txn,
 	}
-	c.IndentedJSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, data)
+}
+
+func GetTransactionByID(c *gin.Context) {
+	email, ok := c.MustGet("email").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, models.AuthorizationError)
+		return
+	}
+	acc, err := database.GetAccountData(email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.AccountFetchError)
+		return
+	}
+	txnID := c.Param("txnID")
+	txn, err := database.GetTransactionByID(acc.Number, txnID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, txn)
 }
 
 func GetWithdrawals(c *gin.Context) {
 	email, ok := c.MustGet("email").(string)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Authorization error.",
-		})
+		c.JSON(http.StatusBadRequest, models.AuthorizationError)
 		return
 	}
 	acc, err := database.GetAccountData(email)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
-		})
+		c.JSON(http.StatusBadRequest, models.AccountFetchError)
 		return
 	}
 	var TxnLimit int
@@ -89,22 +103,18 @@ func GetWithdrawals(c *gin.Context) {
 	data := map[string]interface{}{
 		"transactions": txn,
 	}
-	c.IndentedJSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, data)
 }
 
 func GetDeposits(c *gin.Context) {
 	email, ok := c.MustGet("email").(string)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Authorization error.",
-		})
+		c.JSON(http.StatusBadRequest, models.AuthorizationError)
 		return
 	}
 	acc, err := database.GetAccountData(email)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
-		})
+		c.JSON(http.StatusBadRequest, models.AccountFetchError)
 		return
 	}
 	var TxnLimit int
@@ -130,5 +140,5 @@ func GetDeposits(c *gin.Context) {
 	data := map[string]interface{}{
 		"transactions": txn,
 	}
-	c.IndentedJSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, data)
 }

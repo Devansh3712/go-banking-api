@@ -47,7 +47,7 @@ func MigrateImmuDB() error {
 		`CREATE TABLE IF NOT EXISTS transactions (
 			id 				VARCHAR[16],
 			type 			VARCHAR,
-			amount 			VARCHAR,
+			amount 			INTEGER,
 			account_number 	VARCHAR,
 			time			TIMESTAMP,
 			PRIMARY KEY (id)
@@ -128,11 +128,11 @@ func GetTransactions(accNumber string, limit int) (*[]models.Transaction, error)
 	}
 	var transactions []models.Transaction
 	for _, row := range result.Rows {
-		amountFloat, _ := strconv.ParseFloat(row.Values[2].GetS(), 64)
+		amountInt, _ := strconv.Atoi(row.Values[2].GetS())
 		txn := models.Transaction{
 			TxnID:     row.Values[0].GetS(),
 			Type:      row.Values[1].GetS(),
-			Amount:    amountFloat,
+			Amount:    uint64(amountInt / 100),
 			Number:    row.Values[3].GetS(),
 			Timestamp: time.UnixMicro(row.Values[4].GetTs()),
 		}
@@ -172,15 +172,55 @@ func GetTransactionsByType(_type models.Txn, accNumber string, limit int) (*[]mo
 	}
 	var transactions []models.Transaction
 	for _, row := range result.Rows {
-		amountFloat, _ := strconv.ParseFloat(row.Values[2].GetS(), 64)
+		amountInt, _ := strconv.Atoi(row.Values[2].GetS())
 		txn := models.Transaction{
 			TxnID:     row.Values[0].GetS(),
 			Type:      row.Values[1].GetS(),
-			Amount:    amountFloat,
+			Amount:    uint64(amountInt / 100),
 			Number:    row.Values[3].GetS(),
 			Timestamp: time.UnixMicro(row.Values[4].GetTs()),
 		}
 		transactions = append(transactions, txn)
 	}
 	return &transactions, nil
+}
+
+func GetTransactionByID(accNumber string, txnID string) (*models.Transaction, error) {
+	connection, err := client.NewImmuClient(client.DefaultOptions())
+	if err != nil {
+		return nil, err
+	}
+	ctx := context.Background()
+	response, err := connection.Login(
+		ctx,
+		[]byte(config.GetEnv("IMMUDB_USERNAME")),
+		[]byte(config.GetEnv("IMMUDB_PASSWORD")),
+	)
+	if err != nil {
+		return nil, err
+	}
+	md := metadata.Pairs("authorization", response.Token)
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	result, err := connection.SQLQuery(
+		ctx,
+		`SELECT * FROM transactions
+		WHERE account_number = @accNumber AND id = @txnID`,
+		map[string]interface{}{"accNumber": accNumber, "txnID": txnID},
+		true,
+	)
+	if err != nil {
+		return nil, err
+	}
+	var transaction models.Transaction
+	for _, row := range result.Rows {
+		amountInt, _ := strconv.Atoi(row.Values[2].GetS())
+		transaction = models.Transaction{
+			TxnID:     row.Values[0].GetS(),
+			Type:      row.Values[1].GetS(),
+			Amount:    uint64(amountInt / 100),
+			Number:    row.Values[3].GetS(),
+			Timestamp: time.UnixMicro(row.Values[4].GetTs()),
+		}
+	}
+	return &transaction, nil
 }

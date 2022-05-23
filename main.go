@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/Devansh3712/go-banking-api/database"
 	"github.com/Devansh3712/go-banking-api/middleware"
+	"github.com/Devansh3712/go-banking-api/models"
 	"github.com/Devansh3712/go-banking-api/routes"
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +26,7 @@ func main() {
 	if err := database.MigrateImmuDB(); err != nil {
 		panic(err)
 	}
-	fmt.Println("Migrations successfull.")
+	log.Println("Migrations successfull.")
 
 	gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
@@ -33,14 +34,10 @@ func main() {
 	app.HandleMethodNotAllowed = true
 
 	app.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "Endpoint not found.",
-		})
+		c.JSON(http.StatusNotFound, models.EndpointNotFound)
 	})
 	app.NoMethod(func(c *gin.Context) {
-		c.JSON(http.StatusForbidden, gin.H{
-			"message": "Method not allowed.",
-		})
+		c.JSON(http.StatusForbidden, models.MethodNotAllowed)
 	})
 
 	v1 := app.Group("/api/v1")
@@ -61,11 +58,12 @@ func main() {
 		transaction := v1.Group("/transaction")
 		{
 			transaction.GET("/", middleware.JWTAuthMiddleware(), routes.GetTransactions)
+			transaction.GET("/id/:txnID", middleware.JWTAuthMiddleware(), routes.GetTransactionByID)
 			transaction.GET("/deposit", middleware.JWTAuthMiddleware(), routes.GetDeposits)
 			transaction.GET("/withdraw", middleware.JWTAuthMiddleware(), routes.GetWithdrawals)
 		}
 	}
 
-	fmt.Println("API running on http://localhost:8000")
-	app.Run("localhost:8000")
+	log.Println("API running on http://localhost:8000")
+	log.Fatal(app.Run("localhost:8000"))
 }

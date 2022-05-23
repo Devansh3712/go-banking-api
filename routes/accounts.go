@@ -14,16 +14,12 @@ import (
 func GetUserAccountData(c *gin.Context) {
 	email, ok := c.MustGet("email").(string)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Authorization error.",
-		})
+		c.JSON(http.StatusBadRequest, models.AuthorizationError)
 		return
 	}
 	acc, err := database.GetAccountData(email)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
-		})
+		c.JSON(http.StatusBadRequest, models.AccountFetchError)
 		return
 	}
 	txn, err := database.GetTransactions(acc.Number, 10)
@@ -37,15 +33,13 @@ func GetUserAccountData(c *gin.Context) {
 		"account":      acc,
 		"transactions": txn,
 	}
-	c.IndentedJSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, data)
 }
 
 func Deposit(c *gin.Context) {
 	email, ok := c.MustGet("email").(string)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Authorization error.",
-		})
+		c.JSON(http.StatusBadRequest, models.AuthorizationError)
 		return
 	}
 	amount, got := c.GetQuery("amount")
@@ -94,9 +88,7 @@ func Deposit(c *gin.Context) {
 func Withdraw(c *gin.Context) {
 	email, ok := c.MustGet("email").(string)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Authorization error.",
-		})
+		c.JSON(http.StatusBadRequest, models.AuthorizationError)
 		return
 	}
 	amount, got := c.GetQuery("amount")
